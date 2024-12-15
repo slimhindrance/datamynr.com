@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add to Mailing List</title>
+</head>
+<body>
+    <h1>Add to Mailing List</h1>
+    <form id="mailingListForm">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        <button type="submit">Add Email</button>
+    </form>
+    <p id="responseMessage" style="color: green;"></p>
+    <p id="errorMessage" style="color: red;"></p>
+
+    <script>
+        // API Gateway Endpoint
+        const apiEndpoint = 'https://bvlrt8e0e8.execute-api.us-east-1.amazonaws.com/email'; // Replace with your actual endpoint
+
+        // Get form and elements
+        const form = document.getElementById('mailingListForm');
+        const responseMessage = document.getElementById('responseMessage');
+        const errorMessage = document.getElementById('errorMessage');
+
+        // Form submission event
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Clear previous messages
+            responseMessage.textContent = '';
+            errorMessage.textContent = '';
+
+            // Get email value
+            const email = document.getElementById('email').value;
+
+            try {
+                // Send POST request
+                const response = await fetch(apiEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email }),
+                });
+
+                // Handle response
+                if (response.ok) {
+                    responseMessage.textContent = 'Email added successfully!';
+                    form.reset();
+                } else {
+                    const errorData = await response.json();
+                    errorMessage.textContent = errorData.error || 'Failed to add email.';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                errorMessage.textContent = 'An unexpected error occurred.';
+            }
+        });
+    </script>
+</body>
+</html>
